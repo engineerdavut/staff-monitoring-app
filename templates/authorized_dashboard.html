@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+    <h1 class="text-center mb-5">Authorized Dashboard</h1>
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-danger text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Notifications</h5>
+                    <span class="badge bg-light text-primary" id="notificationCount">0</span>
+                </div>
+                <div class="card-body">
+                    <div id="notificationsContainer" style="max-height: 300px; overflow-y: auto;">
+                        <!-- Notifications will be populated here -->
+                    </div>
+                    <div class="d-flex justify-content-between mt-3">
+                        <button id="loadLessNotifications" class="btn btn-outline-primary d-none">Load Less</button>
+                        <button id="loadMoreNotifications" class="btn btn-outline-primary d-none">Load More</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Fast Access</h5>
+                    <a class="btn btn-primary btn-lg w-100" href="{% url 'detailed_monthly_report' %}" id="detailedMonthlyReportBtn">Detailed Monthly Work Report</a>
+                </div>
+            </div>
+        </div>
+    </div>       
+    <div class="row justify-content-center">
+        <div class="col-lg-12">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Employee Overview</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover display" id="employeeOverviewTable">
+                            <thead>
+                                <tr>
+                                    <th>Employee Name</th>
+                                    <th>Status</th>
+                                    <th>Last Action Time</th>
+                                    <th>Lateness (min)</th>
+                                    <th>Total Work Duration</th>
+                                    <th>Remaining Leave</th>
+                                    <th>Annual Leave</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Employee data will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-12">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">Leave Requests</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="leaveRequestsTable">
+                            <thead>
+                                <tr>
+                                    <th>Employee</th>
+                                    <th>Start Date</th>
+                                    <th>End Date</th>
+                                    <th>Reason</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Leave requests will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-warning text-white">
+                    <h5 class="mb-0">Add Leave</h5>
+                </div>
+                <div class="card-body">
+                    <form id="addLeaveForm">
+                        <div class="mb-3">
+                            <label for="employeeSelect" class="form-label">Employee</label>
+                            <select class="form-select" id="employeeSelect" name="employee" required>
+                                <option value="" disabled selected>Select an employee</option>
+                                <!-- Options will be populated dynamically -->
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="startDate" class="form-label">Start Date</label>
+                            <input type="date" class="form-control" id="startDate" name="start_date" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="endDate" class="form-label">End Date</label>
+                            <input type="date" class="form-control" id="endDate" name="end_date" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="reason" class="form-label">Reason</label>
+                            <textarea class="form-control" id="reason" name="reason" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Add Leave</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Update Leave Balance</h5>
+                </div>
+                <div class="card-body">
+                    <form id="updateLeaveBalanceForm">
+                        <div class="mb-3">
+                            <label for="employeeForLeaveBalance" class="form-label">Employee</label>
+                            <select class="form-select" id="employeeForLeaveBalance" name="employee" required>
+                                <option value="">Select an employee</option>
+                                <!-- Options will be populated dynamically -->
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="leaveBalanceChange" class="form-label">Change in Leave Balance</label>
+                            <input type="number" class="form-control" id="leaveBalanceChange" name="change" required>
+                            <small class="form-text text-muted">Enter a positive number to add leave days or a negative number to subtract leave days.</small>
+                        </div>
+                        <p>Selected Employee: <span id="selectedEmployeeName"></span></p>
+                        <button type="submit" class="btn btn-primary">Update Leave Balance</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.min.css">
+<script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+<script type="module"  src="{% static 'js/authorized_dashboard.js' %}"></script>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+

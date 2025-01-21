@@ -1,0 +1,164 @@
+# Python
+*.py[cod]
+__pycache__/
+*.so
+
+# Django
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+media
+
+# Docker
+.docker
+
+# Databases
+*.sqlite3
+*.db
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Virtual environment
+venv/
+env/
+ENV/
+
+# IDE specific files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# Static files
+staticfiles/
+
+# Compiled Python files
+*.pyc
+
+# Logs
+logs/
+*.log
+
+# Temporary files
+*.bak
+*.tmp
+*.temp
+
+# Coverage reports
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
+
+# Pytest
+.pytest_cache/
+
+# mypy
+.mypy_cache/
+
+# Redis dump file
+dump.rdb
+
+# Node modules (if you decide to use any frontend JavaScript libraries)
+node_modules/
+
+# Compiled CSS
+*.css.map
+
+# Compiled JavaScript
+*.js.map
+
+# Byte-compiled / optimized / DLL files
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# pyenv
+.python-version
+
+# pipenv
+Pipfile.lock
+
+# poetry
+poetry.lock
+
+# Celery stuff
+celerybeat-schedule.*
+
+# SageMath parsed files
+*.sage.py
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# Mr Developer
+.mr.developer.cfg
+.project
+.pydevproject
+
+# mkdocs documentation
+/site
+
+# Pyre type checker
+.pyre/
+
+# pytype static type analyzer
+.pytype/
+
+# Cython debug symbols
+cython_debug/

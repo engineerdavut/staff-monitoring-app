@@ -1,0 +1,136 @@
+version: '3.8'
+
+services:
+  daphne:
+    build: .
+    command: >
+      sh -c "
+        python manage.py wait_for_service db &&
+        python manage.py wait_for_service redis &&
+        python manage.py makemigrations &&
+        python manage.py makemigrations employee_tracking_system &&
+        python manage.py migrate &&
+        python manage.py collectstatic --noinput &&
+        python manage.py check_celery &&
+        daphne -b 0.0.0.0 -p 8000 employee_tracking_system.asgi:application
+      "
+    restart: always
+    volumes:
+      - .:/app
+      - static_volume:/app/staticfiles
+    ports:
+      - "8001:8000"
+    depends_on:
+      - db
+      - redis
+    env_file:
+      - .env
+    environment:
+      - PYTHONPATH=/app
+      - DJANGO_SETTINGS_MODULE=employee_tracking_system.settings
+      - AUTHORIZED_KEY=${AUTHORIZED_KEY}
+      - DEBUG=${DEBUG}
+      - DJANGO_ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS}
+    networks:
+      - app_network
+
+  db:
+    image: postgres:13
+    restart: always
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    networks:
+      - app_network
+
+  redis:
+    image: redis:7.4
+    restart: always
+    ports:
+      - "6379:6379"
+    networks:
+      - app_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 2s
+      retries: 3
+
+  celery:
+    build: .
+    restart: always
+    command: >
+      sh -c "
+        python manage.py wait_for_service db &&
+        python manage.py wait_for_service redis &&
+        celery -A employee_tracking_system worker -l info
+      "
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+      - redis
+    env_file:
+      - .env
+    environment:
+      - PYTHONPATH=/app
+      - DJANGO_SETTINGS_MODULE=employee_tracking_system.settings
+      - AUTHORIZED_KEY=${AUTHORIZED_KEY}
+      - DEBUG=${DEBUG}
+      - DJANGO_ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS}
+    networks:
+      - app_network
+
+  celery-beat:
+    build: .
+    restart: always
+    command: >
+      sh -c "
+        python manage.py wait_for_service db &&
+        python manage.py wait_for_service redis &&
+        celery -A employee_tracking_system beat -l info
+      "
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+      - redis
+    env_file:
+      - .env
+    environment:
+      - PYTHONPATH=/app
+      - DJANGO_SETTINGS_MODULE=employee_tracking_system.settings
+      - AUTHORIZED_KEY=${AUTHORIZED_KEY}
+      - DEBUG=${DEBUG}
+      - DJANGO_ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS}
+    networks:
+      - app_network
+
+volumes:
+  postgres_data:
+  static_volume:
+
+networks:
+  app_network:
+    driver: bridge
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+    <h1 class="text-center mb-3">Employee Dashboard</h1>
+    <h2 id="welcomeMessage" class="text-center mb-4"></h2>
+
+    
+    <div id="notification-container" class="mb-4"></div>
+    
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <span id="remainingLeaveText">Loading remaining leave...</span>
+                        <span id="remainingLeaveIndicator" class="badge rounded-pill"></span>
+                    </h5>
+                    <p id="remainingLeaveDisplay"></p>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-transparent">
+                    <h5 class="mb-0">Attendance</h5>
+                </div>
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-3" id="attendanceStatus">Loading...</h6>
+                    <p id="latenessDisplay"></p>
+                    <div class="d-flex justify-content-between">
+                        <button id="checkInBtn" class="btn btn-success">Check In</button>
+                        <button id="checkOutBtn" class="btn btn-danger">Check Out</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-transparent">
+                    <h5 class="mb-0">Leave Request</h5>
+                </div>
+                <div class="card-body">
+                    <form id="leaveRequestForm">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="startDate" class="form-label">Start Date</label>
+                            <input type="date" class="form-control" id="startDate" name="start_date" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="endDate" class="form-label">End Date</label>
+                            <input type="date" class="form-control" id="endDate" name="end_date" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="reason" class="form-label">Reason</label>
+                            <textarea class="form-control" id="reason" name="reason" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Submit Leave Request</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-header bg-transparent">
+                    <h5 class="mb-0">My Leave Requests</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="myLeaveRequestsTable">
+                            <thead>
+                                <tr>
+                                    <th>Start Date</th>
+                                    <th>End Date</th>
+                                    <th>Reason</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Leave requests will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script type="module"  src="{% static 'js/employee_dashboard.js' %}"></script>
+{% endblock %}
+
+
+
+
+
+
+

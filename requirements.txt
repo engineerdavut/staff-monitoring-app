@@ -1,0 +1,23 @@
+# Core dependencies
+Django>=3.2.10,<4.0
+djangorestframework>=3.12.4
+psycopg2-binary>=2.9.7
+celery>=5.2.0
+redis>=5.2.0,<5.4.0
+channels>=3.0.4
+channels_redis>=3.3.1
+daphne>=3.0.2
+whitenoise>=5.3.0
+django-redis>=5.2.0
+
+# API documentation
+drf-yasg>=1.20.0
+
+# Frontend
+django-cors-headers>=3.7.0
+django-tables2>=2.7.0
+
+# Development dependencies
+pytest>=6.2.5
+pytest-django>=4.4.0
+coverage>=5.5

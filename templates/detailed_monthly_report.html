@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block extra_css %}
+    <!-- DataTables CSS from CDN -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.min.css">
+{% endblock %}
+
+{% block content %}
+
+<div class="page-container min-vh-100 d-flex flex-column">
+    <div class="flex-grow-1">
+        <div class="container mt-4">
+            <h1 class="mb-4 text-center">Detailed Monthly Work Hours Report</h1>
+
+            <div class="row mb-5 justify-content-center">
+                <div class="col-md-6">
+                    <form id="reportForm" class="justify-content-center">
+                        <div class="mb-3">
+                            <label for="month" class="form-label">Month:</label>
+                            <select id="month" class="form-select">
+                                <option value="1">January</option>
+                                <option value="2">February</option>
+                                <option value="3">March</option>
+                                <option value="4">April</option>
+                                <option value="5">May</option>
+                                <option value="6">June</option>
+                                <option value="7">July</option>
+                                <option value="8">August</option>
+                                <option value="9">September</option>
+                                <option value="10">October</option>
+                                <option value="11">November</option>
+                                <option value="12">December</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="year" class="form-label">Year:</label>
+                            <input type="number" id="year" class="form-control" value="2025">
+                        </div>
+                        <div class="mb-3">
+                            <button type="submit" class="btn btn-primary w-100">Show Report</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div id="reportContent" class="card mb-5">
+                <div class="card-header">
+                    Work Hours
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table id="reportDataTable" class="display table table-striped table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Employee</th>
+                                    <th>Total Hours</th>
+                                    <th>Total Lateness</th>
+                                    <th>Avg Daily Hours</th>
+                                    <th>Days Worked</th>
+                                    <th>Days Late</th>
+                                </tr>
+                            </thead>
+                            <tbody id="reportData">
+                                <!-- Report data will be filled by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+    <!-- jQuery from CDN -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.min.css">
+    <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+    <!-- Your Custom JS -->
+    <script type="module" src="{% static 'js/detailed_monthly_report.js' %}"></script>
+{% endblock %}
+

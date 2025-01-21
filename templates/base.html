@@ -1,0 +1,140 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Employee Tracking System{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">  
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="d-flex flex-column min-vh-100">
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark">
+            <div class="container">
+                <a class="navbar-brand" href="{% url 'home' %}">
+                    <i class="fas fa-users me-2"></i>ETS
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'home' %}" id="homeLink">Home</a>
+                        </li>
+                        {% if user.is_authenticated %}
+                            {% if user.user_type == 'authorized' %}
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{% url 'authorized_dashboard' %}" id="authorizedDashboardLink">Authorized Dashboard</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{% url 'detailed_monthly_report' %}" id="detailedMonthlyReportLink">Monthly Report</a>
+                                </li>
+                            {% else %}
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{% url 'employee_dashboard' %}" id="employeeDashboardLink">Employee Dashboard</a>
+                                </li>
+                            {% endif %}
+                            <li class="nav-item">
+                                <a href="#" id="logoutBtn" class="nav-link">Logout</a>
+                            </li>
+                        {% else %}
+                            <li class="nav-item dropdown" id="loginDropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="loginDropdownToggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Login
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="loginDropdownToggle">
+                                    <li><a class="dropdown-item" href="{% url 'employee_login' %}" id="employeeLoginLink">Employee Login</a></li>
+                                    <li><a class="dropdown-item" href="{% url 'authorized_login' %}" id="authorizedLoginLink">Authorized Login</a></li>
+                                </ul>
+                            </li>
+                            <li class="nav-item dropdown" id="registerDropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="registerDropdownToggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Register
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="registerDropdownToggle">
+                                    <li><a class="dropdown-item" href="{% url 'employee_register' %}" id="employeeRegisterLink">Employee Register</a></li>
+                                    <li><a class="dropdown-item" href="{% url 'authorized_register' %}" id="authorizedRegisterLink">Authorized Register</a></li>
+                                </ul>
+                            </li>
+                        {% endif %}
+                        <li class="nav-item">
+                            <button class="btn btn-outline-light ms-2" id="themeToggle">
+                                <i class="fas fa-moon"></i>
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="flex-grow-1">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+
+    <footer class="footer mt-auto py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5>Contact Us</h5>
+                    <p>Email: info@ets.com</p>
+                    <p>Phone: +1 (123) 456-7890</p>
+                </div>
+                <div class="col-md-4">
+                    <h5>Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">FAQ</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h5>Follow Us</h5>
+                    <a href="#" class="me-2"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="me-2"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+            <hr class="mt-4">
+            <div class="text-center mt-4">
+                <p>&copy; 2023 Employee Tracking System. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="module" src="{% static 'js/main.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
