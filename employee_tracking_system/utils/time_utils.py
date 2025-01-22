@@ -12,7 +12,7 @@ class TimeCalculator:
             holidays = []
         if isinstance(day, datetime):
             day = day.date()
-        return day.weekday() < 7 and day not in holidays
+        return day.weekday() < 5 and day not in holidays
 
     @staticmethod
     def count_working_days(start_date: Union[datetime, date], end_date: Union[datetime, date], holidays: List[Union[datetime, date]] = None) -> int:

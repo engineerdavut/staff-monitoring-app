@@ -33,9 +33,4 @@ COPY . .
 
 ENV PYTHONPATH=/app
 
-# Remove the collectstatic command from here
-# We'll run it in the docker-compose command instead
-
-
-
-
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]

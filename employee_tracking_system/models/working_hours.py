@@ -4,7 +4,7 @@ from django.core.exceptions import ValidationError
 
 class WorkingHours(models.Model):
     start_time = models.TimeField(default=timezone.datetime.strptime('08:00', '%H:%M').time())
-    end_time = models.TimeField(default=timezone.datetime.strptime('21:00', '%H:%M').time())
+    end_time = models.TimeField(default=timezone.datetime.strptime('18:00', '%H:%M').time())
 
     class Meta:
         app_label = 'employee_tracking_system'

@@ -1,6 +1,5 @@
 import os
 from pathlib import Path
-from celery.schedules import crontab
 from .celery import app as celery_app
 
 __all__ = ('celery_app',)
@@ -80,7 +79,7 @@ ASGI_APPLICATION = 'employee_tracking_system.asgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('POSTGRES_DB', 'employee_tracking'),
+        'NAME': os.environ.get('POSTGRES_DB', 'employee_tracking_system'),
         'USER': os.environ.get('POSTGRES_USER', 'user'),
         'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'password'),
         'HOST': os.environ.get('POSTGRES_HOST', 'db'),

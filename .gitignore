@@ -18,9 +18,7 @@ media
 *.db
 
 # Environment variables
-.env
-.env.local
-.env.*.local
+
 
 # Virtual environment
 venv/

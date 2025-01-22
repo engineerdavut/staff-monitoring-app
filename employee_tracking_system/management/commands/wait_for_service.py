@@ -58,6 +58,3 @@ class Command(BaseCommand):
         
         self.stdout.write(self.style.ERROR('Failed to connect to Redis after maximum retries!'))
         exit(1)
-
-
-
