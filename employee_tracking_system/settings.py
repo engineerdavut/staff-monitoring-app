@@ -6,10 +6,8 @@ __all__ = ('celery_app',)
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'default_secret_key_for_development')
 
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DJANGO_DEBUG', 'True').lower() == 'true'
 
 ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', 'localhost,127.0.0.1,0.0.0.0').split(',')
@@ -146,10 +144,9 @@ CACHES = {
     }
 }
 
-# Haftalık raporların cache süresi (saniye cinsinden)
-WEEKLY_REPORT_CACHE_TIMEOUT = 60 * 60 * 12 # 12 saat
-# Aylık raporların cache süresi (saniye cinsinden)
-MONTHLY_REPORT_CACHE_TIMEOUT = 60 * 60 * 24 # 24 saat
+WEEKLY_REPORT_CACHE_TIMEOUT = 60 * 60 * 12 
+
+MONTHLY_REPORT_CACHE_TIMEOUT = 60 * 60 * 24 
 
 CORS_ALLOW_ALL_ORIGINS = True
 
@@ -186,7 +183,7 @@ LOGGING = {
         },
     },
     'loggers': {
-        '': {  # Root logger
+        '': {  
             'handlers': ['console'],
             'level': 'DEBUG',
         },
@@ -203,7 +200,7 @@ LOGGING = {
     },
 }
 
-# Django Tables 2 settings
+
 DJANGO_TABLES2_TEMPLATE = "django_tables2/bootstrap4.html"
 
 REST_FRAMEWORK = {
@@ -223,7 +220,7 @@ if not AUTHORIZED_KEY and not DEBUG:
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
 ]
-# Security settings
+
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = 'DENY'
@@ -231,4 +228,3 @@ CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
 SECURE_SSL_REDIRECT = True
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-

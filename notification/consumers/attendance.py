@@ -1,5 +1,4 @@
 from .base import BaseConsumer
-import json 
 import logging  
 
 logger = logging.getLogger(__name__)  
@@ -18,4 +17,3 @@ class AttendanceConsumer(BaseConsumer):
 
     async def attendance_update(self, event):
         await self.send_update(event)
-

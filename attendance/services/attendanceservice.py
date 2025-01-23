@@ -11,12 +11,8 @@ logger = logging.getLogger(__name__)
 class AttendanceService:
     @transaction.atomic
     def set_employee_on_leave(self, employee: Employee, start_date: date, end_date: date):
-        """
-        Belirli bir tarih aralığında çalışanın Attendance durumunu 'on_leave' olarak ayarlar.
-        """
         current_date = start_date
         while current_date <= end_date:
-            # Sadece izin günlerini güncelle
             try:
                 attendance, created = Attendance.objects.get_or_create(
                     employee=employee,

@@ -1,4 +1,3 @@
-import logging
 from rest_framework import viewsets, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -9,7 +8,7 @@ from .models import Attendance
 from django.views.generic import TemplateView
 from django.contrib.auth.models import AnonymousUser
 from .utils import  get_check_in_out_service, get_attendance_report_service
-
+import logging
 
 logger = logging.getLogger(__name__)
 
@@ -69,8 +68,7 @@ class AttendanceStatusView(APIView):
             employee = check_in_out_service.employee_service.get_employee(request.user.employee.id)
             if not employee:
                 return Response({"error": "Employee not found."}, status=404)
-
-            # Get attendance status from service with include_no_check_in=True
+            
             status_data = check_in_out_service.get_attendance_status(employee, include_no_check_in=True)
 
             logger.debug(f"Attendance status for {employee.user.username}: {status_data}")

@@ -4,16 +4,15 @@ from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.contrib.auth import logout
 from django.views.generic import TemplateView
-import logging
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate, login  
 from .serializers import UserSerializer
 from .authrepository import AuthRepository  
 from .services import UserService, EmployeeLoginService, AuthorizedLoginService
 import os  
+import logging
 
 logger = logging.getLogger(__name__)
-
 
 
 class EmployeeLoginTemplateView(TemplateView):
@@ -27,7 +26,6 @@ class EmployeeRegisterTemplateView(TemplateView):
 
 class AuthorizedRegisterTemplateView(TemplateView):
     template_name = 'authentication/authorized_register.html'
-
 
 
 class EmployeeRegisterAPIView(APIView):
@@ -150,4 +148,3 @@ class LogoutAPIView(APIView):
         Token.objects.filter(user=user).delete()
         logger.info(f"User {request.user.username} logged out successfully.")
         return Response({"message": "Successfully logged out."}, status=status.HTTP_200_OK)
-    

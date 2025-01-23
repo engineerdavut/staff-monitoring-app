@@ -7,7 +7,7 @@ class AuthService {
         this.AUTH_TOKEN = 'auth_token';
         this.USER_TYPE_KEY = 'user_type';
         this.USERNAME_KEY = 'username';
-        this.EMPLOYEE_ID_KEY = 'employee_id'; // Yeni anahtar
+        this.EMPLOYEE_ID_KEY = 'employee_id'; 
     }
 
     setToken(token) {
@@ -49,7 +49,6 @@ class AuthService {
     setEmployeeId(employeeId) {
         if (employeeId) {
             localStorage.setItem(this.EMPLOYEE_ID_KEY, employeeId);
-            console.log('Employee ID set in localStorage:', employeeId);
         } else {
             console.warn('Attempted to set null or undefined employee_id');
         }
@@ -57,7 +56,6 @@ class AuthService {
 
     getEmployeeId() {
         const employeeId = localStorage.getItem(this.EMPLOYEE_ID_KEY);
-        console.log('Getting employee_id from localStorage:', employeeId);
         if (!employeeId) {
             console.warn('No employee_id found in localStorage');
         }
@@ -69,7 +67,7 @@ class AuthService {
         localStorage.removeItem(this.AUTH_TOKEN);
         localStorage.removeItem(this.USER_TYPE_KEY);
         localStorage.removeItem(this.USERNAME_KEY);
-        localStorage.removeItem(this.EMPLOYEE_ID_KEY); // Employee ID'yi kaldır
+        localStorage.removeItem(this.EMPLOYEE_ID_KEY);
         console.log('Authentication tokens, user type, username, and employee_id removed from localStorage');
     }
 
@@ -136,7 +134,7 @@ class AuthService {
                     errorMessage = `An error occurred: ${response.statusText}`;
                 }
     
-                console.log('AuthenticatedFetch Error Message:', errorMessage); // Ek log
+                console.log('AuthenticatedFetch Error Message:', errorMessage); 
     
                 throw new Error(errorMessage || `An error occurred: ${response.statusText}`);
             }
@@ -169,7 +167,7 @@ class AuthService {
             }
         } catch (error) {
             console.error('Logout error:', error);
-            notificationService.showNotification('Logout failed. Please try again.', 'danger'); // 'error' yerine 'danger'
+            notificationService.showNotification('Logout failed. Please try again.', 'danger');
         }
     }
 

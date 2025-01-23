@@ -1,10 +1,8 @@
-   # employee/utils.py
 from .employeerepository import EmployeeRepository
 from attendance.attendancerepository import AttendanceRepository
 from attendance.iattendancerepository import IAttendanceRepository
 from .iemployeerepository import IEmployeeRepository
 
-from employee_tracking_system.services.working_hours_service import WorkingHoursService
 
 
 def get_employee_repository() -> IEmployeeRepository:
@@ -33,4 +31,5 @@ def get_attendance_calculator():
     return AttendanceCalculator()
 
 def get_working_hours_service(): 
-    return WorkingHoursService()
+    from employee_tracking_system.common.helpers import get_working_hours_service
+    return get_working_hours_service()

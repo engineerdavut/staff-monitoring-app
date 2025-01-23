@@ -1,10 +1,10 @@
-import logging
 from celery import shared_task
 from django.utils import timezone
 from employee_tracking_system.utils.notification_utils import send_notification
 from .utils import get_employee_service
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
+import logging
 
 logger = logging.getLogger(__name__)
 
@@ -32,14 +32,12 @@ def check_low_leave_balance(threshold=3):
         employees = employee_service.get_employees_with_low_leave_balance(threshold_days=threshold)
 
         for employee in employees:
-            # Çalışana bildirim gönder
             send_notification(
                 user=employee.user,
                 notification_type="LOW_LEAVE_BALANCE",
                 employee=employee.user.username,
                 balance=employee_service.get_remaining_leave_display(employee)
             )
-            # Authorized user’lara da bildirim
             authorized_users = employee_service.get_authorized_employees()
             for auth_user in authorized_users:
                 send_notification(
@@ -57,9 +55,6 @@ def check_low_leave_balance(threshold=3):
 
 @shared_task
 def notify_no_check_in_for_today():
-    """
-    Checks employees who haven't checked in today and sends 'NO_CHECK_IN' notifications.
-    """
     today = timezone.now().date()
     employee_service = get_employee_service()
     employees_without_checkin = employee_service.get_employees_without_check_in(today)
@@ -115,7 +110,6 @@ def update_employee_totals():
             )
             employee_service.increment_total_work_duration(emp, daily_work_duration)
             employee_service.increment_total_lateness(emp, daily_lateness)
-             # Burada remaining_leave'i güncelliyoruz
             employee_service.update_remaining_leave(emp,daily_lateness)
 
 

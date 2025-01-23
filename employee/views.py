@@ -3,16 +3,16 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from django.views.generic import TemplateView
-
 from .services import EmployeeService
 from .serializers import EmployeeSerializer,EmployeeOverviewSerializer,EmployeeListSerializer
-import logging
 from .utils import get_employee_service
 from django.utils import timezone 
 from .employeerepository import EmployeeRepository
 from rest_framework import status  
 from attendance.attendancerepository import AttendanceRepository
-from .models import Employee 
+from .models import Employee
+ 
+import logging
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +21,7 @@ class EmployeeOverviewAPIView(APIView):
 
     def get(self, request):
         try:
-            employee_service = get_employee_service()  # Service'inizi doğru şekilde alın
+            employee_service = get_employee_service() 
             today = timezone.localtime(timezone.now()).date()
 
             if request.user.user_type == 'authorized':
@@ -104,7 +104,6 @@ class EmployeeDetailAPIView(APIView):
             if not employee:
                 return Response({"error": "Employee not found."}, status=status.HTTP_404_NOT_FOUND)
             
-            # EmployeeSerializer'a service context iletilir
             serializer = EmployeeSerializer(employee, context={'service': service})
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Exception as e:

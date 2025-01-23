@@ -9,10 +9,10 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         self.stdout.write('Checking Celery configuration...')
 
-        # Check Celery broker URL
+
         self.stdout.write(f'CELERY_BROKER_URL: {settings.CELERY_BROKER_URL}')
 
-        # Check Celery broker connection
+
         app = Celery('employee_tracking_system')
         app.conf.broker_url = settings.CELERY_BROKER_URL
         try:
@@ -21,7 +21,7 @@ class Command(BaseCommand):
         except TimeoutError:
             self.stdout.write(self.style.ERROR('Celery broker connection failed!'))
 
-        # Check active Celery workers
+
         try:
             active_workers = app.control.inspect().active()
             if active_workers:

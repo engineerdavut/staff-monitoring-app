@@ -12,7 +12,7 @@ from .utils import get_attendance_repository,get_attendance_calculator, get_work
 from datetime import date  
 from attendance.models import Attendance 
 from django.db import transaction 
-
+import logging
 
 logger = logging.getLogger(__name__)
 
@@ -51,14 +51,14 @@ class EmployeeService:
         try:
             employee.remaining_leave -= lateness
 
-            # remaining_leave değerinin negatif olmamasını sağla
+
             if employee.remaining_leave < timedelta():
                 employee.remaining_leave = timedelta()
 
             employee.save()
             logger.info(f"Leave balance updated for employee {employee.id} by lateness of {lateness}")
 
-            # Düşük izin bakiyesi kontrolü (örneğin, 3 gün)
+
             if employee.remaining_leave <= timedelta(days=3):
                 send_notification(
                     user=employee.user, 
@@ -98,7 +98,7 @@ class EmployeeService:
     def reset_annual_leave(self, employee: Employee) -> None:
         try:
             employee.remaining_leave = timedelta(days=employee.annual_leave)
-            employee.total_lateness = 0  # total_lateness artık int olduğu için 0 yapıyoruz
+            employee.total_lateness = 0  
             employee.total_work_duration = timedelta()
             employee.save()
             logger.info(f"Annual leave reset for employee {employee.id}")
@@ -139,7 +139,7 @@ class EmployeeService:
             elif date.year == current_year + 1:
                 return employee.annual_leave
             else:
-                return 0  # Gelecek yıllar için
+                return 0  
         except Exception as e:
             logger.error(f"Error getting remaining leave for date: {e}")
             return 0
@@ -162,20 +162,16 @@ class EmployeeService:
     @transaction.atomic
     def update_leave_balance(self, employee: Employee, change: int) -> None:
         try:
-            # remaining_leave bir DurationField olduğu için timedelta ekliyoruz
             employee.remaining_leave += timedelta(days=change)
             
-            # annual_leave bir IntegerField olduğu için doğrudan integer ekliyoruz
             employee.annual_leave += change
 
-            # remaining_leave değerinin negatif olmamasını sağla
             if employee.remaining_leave < timedelta():
                 employee.remaining_leave = timedelta()
 
             employee.save()
             logger.info(f"Leave balance updated for employee {employee.id} by {change} days")
 
-            # Düşük izin bakiyesi kontrolü (örneğin, 3 gün)
             if employee.remaining_leave <= timedelta(days=3):
                 send_notification(
                     user=employee.user, 
@@ -184,7 +180,6 @@ class EmployeeService:
                     balance=self.get_remaining_leave_display(employee)
                 )
             
-            # Authorized user’lara da bildirim
             authorized_employees = self.get_authorized_employees()
             for auth_employee in authorized_employees:
                 send_notification(

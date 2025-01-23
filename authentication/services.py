@@ -1,8 +1,8 @@
 from rest_framework.authtoken.models import Token
-import logging
 from rest_framework import status
 from .iauthrepository import IAuthRepository
-from employee.models import Employee  
+from employee.models import Employee
+import logging
 
 logger = logging.getLogger(__name__)
 

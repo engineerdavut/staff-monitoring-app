@@ -55,4 +55,3 @@ class BaseConsumer(AsyncWebsocketConsumer):
             logger.error("Received invalid JSON: %s", text_data)
         except Exception as e:
             logger.error(f"Error in receive method: {e}")
-

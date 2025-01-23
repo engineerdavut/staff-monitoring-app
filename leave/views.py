@@ -1,4 +1,3 @@
-import logging
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
@@ -8,11 +7,11 @@ from .services import LeaveService
 from .leaverepository import LeaveRepository
 from django.core.exceptions import ValidationError as DjangoValidationError 
 from .models import Leave  
-
 from employee.employeerepository import EmployeeRepository
 from rest_framework.exceptions import ValidationError
 from .serializers import AuthorizedLeaveSerializer 
 
+import logging
 logger = logging.getLogger(__name__)
 
 
@@ -31,11 +30,7 @@ class BaseLeaveAPIView(generics.GenericAPIView):
         self.leave_repository = LeaveRepository()
         self.employee_repository = EmployeeRepository()
 
-# Employee Leave List View
 class EmployeeLeaveListAPIView(BaseLeaveAPIView, generics.ListAPIView):
-    """
-    Çalışanın kendi izin taleplerini listeler.
-    """
     serializer_class = LeaveSerializer
 
     def get_queryset(self):
@@ -43,11 +38,7 @@ class EmployeeLeaveListAPIView(BaseLeaveAPIView, generics.ListAPIView):
         leave_service = self.get_service()
         return leave_service.get_employee_leaves(employee)
 
-# Employee Leave Create View
 class EmployeeLeaveCreateAPIView(BaseLeaveAPIView, generics.CreateAPIView):
-    """
-    Çalışanın kendi izin talebini oluşturur.
-    """
     serializer_class = LeaveSerializer
 
     def create(self, request, *args, **kwargs):
@@ -84,11 +75,7 @@ class EmployeeLeaveCreateAPIView(BaseLeaveAPIView, generics.CreateAPIView):
         logger.warning(f"Leave request validation failed for {request.user.username}: {serializer.errors}")
         return Response({'error': "Invalid leave request data."}, status=status.HTTP_400_BAD_REQUEST)
 
-# Authorized Leave List View
 class AuthorizedLeaveListAPIView(BaseLeaveAPIView, generics.ListAPIView):
-    """
-    Authorized kullanıcıların tüm izin taleplerini listeler.
-    """
     serializer_class = LeaveSerializer
 
     def get_queryset(self):
@@ -106,11 +93,7 @@ class AuthorizedLeaveListAPIView(BaseLeaveAPIView, generics.ListAPIView):
             return Response({'error': 'Unauthorized'}, status=status.HTTP_403_FORBIDDEN)
         return super().list(request, *args, **kwargs)
 
-# Authorized Leave Create View
 class AuthorizedLeaveCreateAPIView(BaseLeaveAPIView, generics.CreateAPIView):
-    """
-    Authorized kullanıcıların başka bir çalışanın izin talebini oluşturmasını sağlar.
-    """
     serializer_class = AuthorizedLeaveSerializer
 
     def create(self, request, *args, **kwargs):
@@ -147,7 +130,6 @@ class AuthorizedLeaveCreateAPIView(BaseLeaveAPIView, generics.CreateAPIView):
         logger.warning(f"Leave request validation failed for authorized user {user.username}: {serializer.errors}")
         return Response({'error': "Invalid leave request data."}, status=status.HTTP_400_BAD_REQUEST)
 
-# Leave Action View (Approve/Reject)
 class LeaveActionAPIView(BaseLeaveAPIView, generics.GenericAPIView):
 
     def post(self, request, pk, action):
@@ -165,7 +147,6 @@ class LeaveActionAPIView(BaseLeaveAPIView, generics.GenericAPIView):
             if action == 'approve':
                 result = leave_service.approve_leave(pk)
                 if result['status'] == 'rejected':
-                    # Otomatik reddetme durumu
                     serializer = LeaveSerializer(result['leave'])
                     return Response({
                         "message": result['message'],
@@ -193,11 +174,7 @@ class LeaveActionAPIView(BaseLeaveAPIView, generics.GenericAPIView):
             logger.exception(f"Error processing leave action {action}: {e}")
             return Response({'error': 'Internal server error.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-# Cancel Leave View
 class CancelLeaveAPIView(BaseLeaveAPIView, generics.GenericAPIView):
-    """
-    Çalışanların kendi izin taleplerini iptal etmelerini sağlar.
-    """
 
     def post(self, request, pk):
         employee = request.user.employee
@@ -205,8 +182,6 @@ class CancelLeaveAPIView(BaseLeaveAPIView, generics.GenericAPIView):
 
         try:
             leave = leave_service.cancel_leave(pk)
-            # Celery görevi başlatabilirsiniz
-            # cancel_leave_task.delay(pk)
             logger.info(f"Employee {request.user.username} cancelled leave ID {pk}.")
             return Response({"message": "Leave request cancelled successfully."}, status=status.HTTP_200_OK)
         except ValidationError as ve:

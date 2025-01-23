@@ -1,24 +1,19 @@
-import logging
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
-
 from .services import NotificationService
 from .notificationrepository import NotificationRepository
 from .serializers import NotificationSerializer
 
+import logging
+
 logger = logging.getLogger(__name__)
 
-# Instantiating Repository and Service (constructor injection is generally recommended,
-# but we are directly instantiating here for simplicity).
 notification_repository = NotificationRepository()
 notification_service = NotificationService(notification_repository)
 
 class NotificationListView(APIView):
-    """
-    1. Endpoint for listing the notifications of a user.
-    """
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
@@ -33,17 +28,6 @@ class NotificationListView(APIView):
 
 
 class NotificationCreateView(APIView):
-    """
-    2. Endpoint for creating a new notification.
-    Example: POST /notifications/create/
-    Body: {
-       "notification_type": "LOW_LEAVE_BALANCE",
-       "severity": "warning",
-       "type": "temporary",
-       "send_realtime": true,
-       ...
-    }
-    """
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
@@ -63,10 +47,6 @@ class NotificationCreateView(APIView):
 
 
 class NotificationMarkReadView(APIView):
-    """
-    3. Endpoint for marking a notification as read.
-    Example: POST /notifications/mark-read/<pk>/
-    """
     permission_classes = [IsAuthenticated]
 
     def post(self, request, pk):
@@ -78,6 +58,3 @@ class NotificationMarkReadView(APIView):
 
         return Response({"detail": f"Notification {pk} has been marked as read."},
                         status=status.HTTP_200_OK)
-
-
-

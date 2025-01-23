@@ -5,7 +5,6 @@ from .models import Attendance
 from .iattendancerepository import IAttendanceRepository
 from employee.models import Employee
 from .attendancecalculator import AttendanceCalculator
-from employee_tracking_system.services.working_hours_service import WorkingHoursService
 from django.utils import timezone
 from django.db.models import QuerySet
 import logging

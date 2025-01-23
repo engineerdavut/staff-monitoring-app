@@ -1,4 +1,3 @@
-import logging
 from celery import shared_task
 from .services import LeaveService
 from employee_tracking_system.utils.notification_utils import send_notification 
@@ -6,14 +5,12 @@ from .leaverepository import  LeaveRepository
 from employee.employeerepository import EmployeeRepository
 from .ileaverepository import ILeaveRepository
 from employee.iemployeerepository import IEmployeeRepository 
+import logging
 
 logger = logging.getLogger(__name__)
 
 @shared_task
 def approve_leave_task(leave_id):
-    """
-    Approves a leave request via LeaveService, then notifies the employee ('LEAVE_APPROVED').
-    """
     leave_service = LeaveService(
         leave_repository=LeaveRepository(),
         employee_repository=EmployeeRepository()
@@ -35,9 +32,6 @@ def approve_leave_task(leave_id):
 
 @shared_task
 def reject_leave_task(leave_id):
-    """
-    Rejects a leave request, then notifies the employee ('LEAVE_REJECTED').
-    """
     leave_service = LeaveService(
         leave_repository=LeaveRepository(),
         employee_repository=EmployeeRepository()
@@ -59,9 +53,6 @@ def reject_leave_task(leave_id):
 
 @shared_task
 def cancel_leave_task(leave_id):
-    """
-    Cancels a leave request, then notifies the employee ('LEAVE_CANCELLED').
-    """
     leave_service = LeaveService(
         leave_repository=LeaveRepository(),
         employee_repository=EmployeeRepository()

@@ -1,7 +1,6 @@
-from django.core.cache import cache  # Redis cache
+from django.core.cache import cache  
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
-from datetime import datetime
 from django.utils import timezone
 from ..iattendancerepository import IAttendanceRepository
 from employee.services import EmployeeService
@@ -52,11 +51,9 @@ class RealTimeUpdateService:
     def update_all_real_time_attendance(self, employee=None, now_local=None):
         try:
             if employee and now_local:
-            # Tek bir çalışan için anlık güncelleme
                 self._send_single_employee_update(employee, now_local)
 
             else:
-                # Tüm çalışanlar için periyodik güncelleme (eski davranış)
                 now_utc = timezone.now()
                 local_timezone = timezone.get_default_timezone()
                 current_time_local = timezone.localtime(now_utc, local_timezone)
@@ -91,7 +88,6 @@ class RealTimeUpdateService:
             now=current_time_local
         )
 
-        # Anlık remaining leave hesaplaması, db'ye yazılmayacak!
         remaining_leave = employee.remaining_leave - lateness
 
         remaining_leave_display = self.employee_service.get_remaining_leave_displayy(employee, remaining_leave)
@@ -116,10 +112,8 @@ class RealTimeUpdateService:
             "status": status,
             "last_action_time": last_action_time_display
         }
-        # WebSocket üzerinden sadece ilgili çalışana gönder
         self.send_real_time_update_to_employee(employee, message)
 
-        # Yetkili kullanıcılar için de genel bir güncelleme gönderilebilir
         authorized_message = {
             "id": employee.id,
             "remaining_leave": remaining_leave_display,

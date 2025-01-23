@@ -35,3 +35,5 @@ def get_check_in_out_service() -> CheckInOutService:
     real_time_service = get_realtime_update_service()
     attendance_calculator = get_attendance_calculator()
     return CheckInOutService(repository, employee_service, real_time_service, attendance_calculator)
+def get_working_hours_service(): 
+    return get_working_hours_service()

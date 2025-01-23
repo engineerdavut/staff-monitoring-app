@@ -8,7 +8,6 @@ class EmployeeDashboard {
     constructor() {
         this.elements = this.getElementReferences();
         this.currentEmployeeId = authService.getEmployeeId();
-        console.log(`Current Employee ID: ${this.currentEmployeeId}`); // Ek log
         this.init();
     }
 
@@ -36,7 +35,6 @@ class EmployeeDashboard {
             return;
         }
         this.currentEmployeeId = authService.getEmployeeId();
-        console.log(`Current Employee ID after auth check: ${this.currentEmployeeId}`); // Ek log
         this.setupWebSocket();
         this.setupEventListeners();
         this.setupNotificationListeners();
@@ -65,14 +63,8 @@ class EmployeeDashboard {
     handleWebSocketMessage(event) {
         const data = JSON.parse(event.data);
         console.log('WebSocket message received:', data);
-        console.log("yurururruru "+this.currentEmployeeId + "  dfgdfhgd  "+data.id)
-        console.log("Type of currentEmployeeId:", typeof this.currentEmployeeId, "Type of data.id:", typeof data.id);
     
-        // data.id'yi number'a çeviriyoruz
-        const currentEmployeeIdNumber = Number(this.currentEmployeeId);
-        console.log("Converted data.id to number:", currentEmployeeIdNumber, "Type:", typeof currentEmployeeIdNumber);
         if (data.event_type === 'employee_realtime_attendance_update' && data.id === currentEmployeeIdNumber) {
-            console.log("bu ife girmiyor.")
             const message = data.data;
 
             if ( message.remaining_leave && message.lateness) {
@@ -235,7 +227,6 @@ class EmployeeDashboard {
             this.elements.latenessDisplay.textContent = lateness === "0m"
                 ? "Lateness: No lateness"
                 : `Lateness: ${lateness}`;
-                console.log("latenessDisplay1");
         }
     }
 
@@ -467,7 +458,6 @@ class EmployeeDashboard {
     handleError(error, message) {
         console.error(message, error);
         if (error.message) {
-            // Hata mesajını detaylandırarak göster
             this.showNotification(`${message}: ${error.message}`, 'danger');
         }
         else {
@@ -475,7 +465,6 @@ class EmployeeDashboard {
         }
     }
 
-    // Notification handlers
     handleCheckInNotification() { this.updateAttendanceStatus(); }
     handleCheckOutNotification() { this.updateAttendanceStatus(); }
     handleDailyWorkSummaryNotification(data) {

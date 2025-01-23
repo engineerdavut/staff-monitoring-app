@@ -3,8 +3,8 @@ from datetime import date, timedelta
 from .models import Employee
 from .iemployeerepository import IEmployeeRepository
 from django.db.models import Q
-import logging
 from django.core.exceptions import ObjectDoesNotExist
+import logging
 
 logger = logging.getLogger(__name__)
 
@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 class EmployeeRepository(IEmployeeRepository):
     def get_employee(self, employee_id: int) -> Optional[Employee]:
             try:
-                return Employee.objects.get(id=employee_id)  # Doğru: Employee modelindeki id'yi kullan
+                return Employee.objects.get(id=employee_id) 
             except ObjectDoesNotExist:
                 logger.warning(f"Employee not found for employee id: {employee_id}")
                 return None
@@ -76,16 +76,10 @@ class EmployeeRepository(IEmployeeRepository):
            logger.error(f"Error updating total lateness and work duration for employee {employee.id}: {e}")
     
     def get_employees_without_attendance(self, date):
-        """
-        Belirtilen tarihte check-in yapmamış çalışanları bulur.
-        """
         return Employee.objects.exclude(
             attendance__date=date,
             attendance__check_in__isnull=False
         ).distinct()
 
     def get_employees_with_low_leave(self, threshold_days=3):
-        """
-        Kalan izni belirli bir gün sayısının altında olan çalışanları bulur.
-        """
         return Employee.objects.filter(remaining_leave__lt=timedelta(days=threshold_days))

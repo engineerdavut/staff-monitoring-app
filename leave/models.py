@@ -50,4 +50,3 @@ class Leave(models.Model):
 
     def __str__(self):
         return f"Employee {self.employee.user.username} - {self.start_date} to {self.end_date}"
-

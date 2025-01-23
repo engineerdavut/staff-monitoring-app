@@ -12,8 +12,6 @@ class Employee(models.Model):
     total_work_duration = models.DurationField(default=timedelta)
     registration_date = models.DateField(auto_now_add=True) 
 
-
-
     objects = EmployeeManager() 
 
     def __str__(self):

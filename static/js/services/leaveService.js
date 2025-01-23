@@ -1,4 +1,3 @@
-// services/leaveService.js
 import { API_URLS } from '../constants.js';
 import { authService } from './authService.js';
 
@@ -61,4 +60,3 @@ class LeaveService {
 }
 
 export const leaveService = new LeaveService();
-

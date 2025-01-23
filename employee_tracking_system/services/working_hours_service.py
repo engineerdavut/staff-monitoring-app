@@ -1,7 +1,7 @@
-import logging
 from employee_tracking_system.models.working_hours import WorkingHours
 from django.utils import timezone
 from datetime import datetime
+import logging
 
 logger = logging.getLogger(__name__)
 class WorkingHoursService:

@@ -1,7 +1,7 @@
 from django.contrib.auth import authenticate
 from django.db import transaction
 from .models import User
-from .iauthrepository import IAuthRepository  # Adjust the import path as necessary
+from .iauthrepository import IAuthRepository 
 
 class AuthRepository(IAuthRepository):
     def create_user(self, username, email, password, user_type):

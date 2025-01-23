@@ -1,5 +1,3 @@
-# common/helpers.py
-
 from attendance.attendancecalculator import AttendanceCalculator
 from ..services.working_hours_service import WorkingHoursService
 

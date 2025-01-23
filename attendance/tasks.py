@@ -1,18 +1,11 @@
-   # attendance/tasks.py
-import logging
 from celery import shared_task
 from django.utils import timezone
 from employee_tracking_system.utils.notification_utils import send_notification 
-from employee.models import Employee
-from employee_tracking_system.services.working_hours_service import WorkingHoursService
-from employee_tracking_system.utils.time_utils import TimeCalculator
-from .attendancecalculator import AttendanceCalculator
 from typing import List, Dict, Any  
-from datetime import timedelta
 from django.dispatch import receiver  
 from django.db.models.signals import post_save  
 from .models import Attendance
-from datetime import datetime  # Add this line
+import logging
 
 logger = logging.getLogger(__name__)
 
@@ -29,7 +22,6 @@ from .utils import (
 def daily_work_summary():
     try:
         today = timezone.now().date()
-        # Gerekirse check_in_out_service lazy import:
         check_in_out_service = get_check_in_out_service()
 
         attendances = check_in_out_service.repository.get_checked_out_attendances(today)
@@ -47,14 +39,10 @@ def daily_work_summary():
 
 @shared_task
 def check_employee_lateness():
-    """
-    Örnek: Gecikme kontrolü - Her sabah tetiklenebilir.
-    """
     try:
         employee_service = get_employee_service()
         employees = employee_service.get_all_employees()
         for employee in employees:
-            # Belki her sabah daily lateness hesaplarsınız
             employee_service.calculate_daily_lateness(employee)
         logger.info("check_employee_lateness: Processed late attendances.")
     except Exception as e:
@@ -76,9 +64,6 @@ def update_real_time_attendance():
 
 @shared_task
 def generate_monthly_report_task(year: int, month: int) -> List[Dict[str, Any]]:
-    """
-    Aylık rapor oluşturma job.
-    """
     try:
         report_service = get_attendance_report_service()
         report = report_service.get_monthly_report(year, month)
@@ -89,9 +74,6 @@ def generate_monthly_report_task(year: int, month: int) -> List[Dict[str, Any]]:
 
 @shared_task
 def generate_weekly_report_task(year: int, month: int, week: int) -> List[Dict[str, Any]]:
-    """
-    Haftalık rapor oluşturma job.
-    """
     try:
         report_service = get_attendance_report_service()
         report = report_service.get_weekly_report(year, month, week)
@@ -100,16 +82,8 @@ def generate_weekly_report_task(year: int, month: int, week: int) -> List[Dict[s
         logger.error(f"Error in generate_weekly_report_task: {e}")
         return []
 
-
-
-
-
 @shared_task
 def send_check_in_notification(user_id, check_in_time_str):
-    """
-    Check-in bildirimi. Artık service içinden çağrılmıyor!
-    Proje yapınıza göre sinyal veya tasks'tan tetiklenebilir.
-    """
     from django.contrib.auth import get_user_model
     User = get_user_model()
     
@@ -134,4 +108,3 @@ def send_check_in_notification(user_id, check_in_time_str):
 def check_in_post_save(sender, instance, created, **kwargs):
     if created and instance.status == 'checked_in':
         send_check_in_notification.delay(instance.employee.user.id, instance.check_in.isoformat())
-        

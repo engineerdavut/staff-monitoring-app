@@ -13,4 +13,3 @@ urlpatterns = [
     path('employee-dashboard/', EmployeeDashboardView.as_view(), name='employee_dashboard'),
     path('authorized-dashboard/', AuthorizedDashboardView.as_view(), name='authorized_dashboard'),
 ]
-

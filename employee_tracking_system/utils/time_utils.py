@@ -79,14 +79,8 @@ class TimeCalculator:
 
     @staticmethod
     def get_working_days_in_month(year: int, month: int) -> List[date]:
-        """
-        Returns a list of working days in the specified month up to the current day if the month is the current month.
-        If the specified month is in the past, returns all working days of that month.
-        If the specified month is in the future, returns an empty list.
-        """
         today = timezone.localtime(timezone.now()).date()
 
-        # Belirtilen yıl ve ay gelecekte ise boş liste döndür
         if (year, month) > (today.year, today.month):
             return []
 
@@ -95,7 +89,6 @@ class TimeCalculator:
         if (year, month) == (today.year, today.month):
             up_to_day = today.day
         else:
-            # Geçmiş aylarda tüm günleri hesaba kat
             if month == 12:
                 up_to_day = 31
             else:

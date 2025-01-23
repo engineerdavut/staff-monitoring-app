@@ -1,5 +1,3 @@
-# leave/services.py
-
 from django.db import transaction
 from django.core.exceptions import ValidationError
 from .leaverepository import LeaveRepository
@@ -7,11 +5,10 @@ from employee.employeerepository import EmployeeRepository
 from .ileaverepository import ILeaveRepository
 from employee.iemployeerepository import IEmployeeRepository
 from .models import Leave
-import logging
 from django.utils import timezone
 from datetime import timedelta
 from attendance.services import AttendanceService
-
+import logging
 
 logger = logging.getLogger(__name__)
 
@@ -26,17 +23,14 @@ class LeaveService:
         if not employee:
             raise ValidationError("Employee not found.")
 
-        # İzin talebini doğrula
         self._validate_leave_request(employee, start_date, end_date, holidays)
 
-        # Kalan izin gününü kontrol et (sadece hafta içi günler)
         leave_days = self.leave_repository.calculate_leave_days(start_date, end_date, holidays)
         remaining_leave = self.leave_repository.get_remaining_leave(employee)
         logger.debug(f"Requesting leave: leave_days={leave_days}, remaining_leave={remaining_leave}")
         if leave_days > remaining_leave:
             raise ValidationError("Not enough leave days available.")
 
-        # İzin talebi oluştur
         leave_data = {
             "employee": employee,
             "start_date": start_date,
@@ -53,18 +47,17 @@ class LeaveService:
         if not employee:
             raise ValidationError("Employee not found.")
 
-        # İzin talebini doğrula
+
         self._validate_leave_request(employee, start_date, end_date, holidays)
 
-        # Kalan izin gününü kontrol et (sadece hafta içi günler)
+
         leave_days = self.leave_repository.calculate_leave_days(start_date, end_date, holidays)
         remaining_leave = self.leave_repository.get_remaining_leave(employee)
         logger.debug(f"Creating approved leave: leave_days={leave_days}, remaining_leave={remaining_leave}")
 
-        # Çakışan izinleri kontrol et
+
         overlapping_leaves = self.leave_repository.get_overlapping_leaves(employee, start_date, end_date)
         if overlapping_leaves.exists():
-            # İzin talebi çakışıyorsa reddet
             leave_data = {
                 "employee": employee,
                 "start_date": start_date,
@@ -77,7 +70,6 @@ class LeaveService:
             return leave
 
         if leave_days > remaining_leave:
-            # Yeterli izin yoksa reddet
             leave_data = {
                 "employee": employee,
                 "start_date": start_date,
@@ -89,10 +81,8 @@ class LeaveService:
             logger.info(f"Leave request automatically rejected for employee {employee.user.username} due to insufficient leave days.")
             return leave
 
-        # Kalan izin gününü güncelle
         self.leave_repository.update_remaining_leave(employee, leave_days)
 
-        # İzin talebini onaylı olarak oluştur
         leave_data = {
             "employee": employee,
             "start_date": start_date,
@@ -103,11 +93,9 @@ class LeaveService:
         leave = self.leave_repository.create_leave(leave_data)
         logger.info(f"Approved leave created for employee {employee.user.username}.")
 
-        # AttendanceService'i kullanarak Attendance kayıtlarını güncelleyin
         try:
             self.attendance_service.set_employee_on_leave(employee, start_date, end_date)
         except ValidationError as ve:
-            # Attendance güncellemesi başarısız olursa, izin talebini geri alın
             leave.status = Leave.REJECTED
             leave.updated_at = timezone.now()
             self.leave_repository.update_leave(leave)
@@ -117,16 +105,13 @@ class LeaveService:
         return leave
 
     def _validate_leave_request(self, employee, start_date, end_date, holidays=None):
-        # 1. Tarih doğrulaması: Başlangıç tarihi bitiş tarihinden önce olmalı
         if start_date > end_date:
             raise ValidationError("End date must be after start date.")
 
-        # 2. İzin talebi yarından itibaren başlamalı
         tomorrow = timezone.now().date() + timedelta(days=1)
         if start_date < tomorrow:
             raise ValidationError("Start date cannot be before tomorrow.")
 
-        # 3. Çakışan izin taleplerini kontrol et
         overlapping_leaves = self.leave_repository.get_overlapping_leaves(employee, start_date, end_date)
         if overlapping_leaves.exists():
             conflicting_leaves = overlapping_leaves.values_list('start_date', 'end_date')
@@ -153,13 +138,11 @@ class LeaveService:
                 "leave": leave
             }
 
-        # İzin onaylama işlemleri
         leave_days = self.leave_repository.calculate_leave_days(leave.start_date, leave.end_date)
         employee = leave.employee
         remaining_leave = self.leave_repository.get_remaining_leave(employee)
         logger.debug(f"Approving leave: leave_days={leave_days}, remaining_leave={remaining_leave}")
         if leave_days > remaining_leave:
-            # Yeterli izin yoksa reddet
             leave.status = Leave.REJECTED
             leave.updated_at = timezone.now()
             self.leave_repository.update_leave(leave)
@@ -170,20 +153,16 @@ class LeaveService:
                 "leave": leave
             }
 
-        # Kalan izin gününü güncelle
         self.leave_repository.update_remaining_leave(employee, leave_days)
 
-        # İzin talebini onayla
         leave.status = Leave.APPROVED
         leave.updated_at = timezone.now()
         self.leave_repository.update_leave(leave)
         logger.info(f"Leave {leave_id} approved.")
 
-        # AttendanceService'i kullanarak Attendance kayıtlarını güncelleyin
         try:
             self.attendance_service.set_employee_on_leave(employee, leave.start_date, leave.end_date)
         except ValidationError as ve:
-            # Attendance güncellemesi başarısız olursa, izin talebini geri al
             leave.status = Leave.REJECTED
             leave.updated_at = timezone.now()
             self.leave_repository.update_leave(leave)
@@ -207,8 +186,6 @@ class LeaveService:
             raise ValidationError("Leave not found.")
         if leave.status != Leave.PENDING:
             raise ValidationError("Only pending leaves can be rejected.")
-
-        # İzin talebini reddet
         leave.status = Leave.REJECTED
         leave.updated_at = timezone.now()
         self.leave_repository.update_leave(leave)
@@ -223,7 +200,6 @@ class LeaveService:
         if leave.status != Leave.PENDING:
             raise ValidationError("Only pending leaves can be cancelled.")
 
-        # İzin talebini iptal et
         leave.status = Leave.CANCELLED
         leave.updated_at = timezone.now()
         self.leave_repository.update_leave(leave)

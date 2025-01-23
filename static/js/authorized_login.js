@@ -54,4 +54,3 @@ class AuthorizedLogin {
 document.addEventListener('DOMContentLoaded', () => {
   new AuthorizedLogin();
 });
-

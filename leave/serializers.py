@@ -64,6 +64,4 @@ class AuthorizedLeaveSerializer(serializers.ModelSerializer):
         tomorrow = timezone.now().date() + timedelta(days=1)
         if start_date < tomorrow:
             raise serializers.ValidationError("Start date cannot be before tomorrow.")
-
-        # Diğer validasyonlar serviste yapılıyor
         return data

@@ -17,11 +17,10 @@ class EmployeeSerializer(serializers.ModelSerializer):
         ]
 
     def get_remaining_leave_display(self, obj):
-        # Serializer context'ten EmployeeService alınır
         service = self.context.get('service')
         if service:
             return service.get_remaining_leave_display(obj)
-        return "0d 0h 0m"  # Servis bulunamadığında varsayılan değer
+        return "0d 0h 0m"  
 
 class EmployeeOverviewSerializer(serializers.Serializer):
     id = serializers.IntegerField()

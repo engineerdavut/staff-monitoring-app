@@ -19,7 +19,6 @@ class AttendanceManager(models.Manager):
         elif not attendances.exists():
             return 'not_checked_in'
         else:
-            # Attendances'ı check_out veya check_in'e göre sırala (önce check_out, sonra check_in)
             last_attendance = attendances.order_by('-check_out', '-check_in').first()
             if last_attendance and last_attendance.check_out is None:
                 return 'checked_in'
@@ -52,7 +51,6 @@ class Attendance(models.Model):
             raise ValidationError("Check-out time must be after check-in time.")
 
     def save(self, *args, **kwargs):
-        # Status belirleme
         if self.status != 'on_leave':
             if self.check_in and self.check_out:
                 self.status = 'checked_out'

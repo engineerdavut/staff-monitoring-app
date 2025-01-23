@@ -21,7 +21,6 @@ class ILeaveRepository(ABC):
 
     @abstractmethod
     def update_leave(self, leave):
-        """Updates an existing leave instance."""
         pass
 
     @abstractmethod

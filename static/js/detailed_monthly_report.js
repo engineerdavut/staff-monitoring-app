@@ -8,7 +8,7 @@ class MonthlyReport {
         this.reportForm = document.getElementById('reportForm');
         this.reportData = document.getElementById('reportData');
         this.currentYear = new Date().getFullYear();
-        this.currentMonth = new Date().getMonth() + 1; // January is 0, so add 1
+        this.currentMonth = new Date().getMonth() + 1; 
 
         console.log(`Current Year: ${this.currentYear}, Current Month: ${this.currentMonth}`);
 
@@ -166,4 +166,3 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('DOM fully loaded and parsed');
     new MonthlyReport();
 });
-

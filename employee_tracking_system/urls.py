@@ -15,7 +15,6 @@ schema_view = get_schema_view(
     permission_classes=(permissions.AllowAny,),
 )
 
-# API versioning namespace
 api_v1_patterns = [                    
     path('leave/', include('leave.urls')),
     path('notification/', include('notification.urls')),  

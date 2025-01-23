@@ -32,13 +32,13 @@ class EmployeeLogin {
         });
 
         const data = await response.json();
-        console.log('Login response data:', data); // Ek log
+        console.log('Login response data:', data); 
 
         if (response.ok) {
             authService.setToken(data.token);
             authService.setUserType('employee');
             authService.setUsername(data.username);
-            authService.setEmployeeId(data.employee_id); // Employee ID'yi ayarla
+            authService.setEmployeeId(data.employee_id); 
             notificationService.showNotification('Login successful', 'success');
             notificationService.connect();
             window.dispatchEvent(new Event('auth-change'));

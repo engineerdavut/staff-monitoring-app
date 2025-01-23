@@ -1,4 +1,3 @@
-import logging
 from datetime import datetime, timedelta, date
 from typing import Dict, Any, List
 from django.utils import timezone
@@ -10,7 +9,7 @@ from redis.lock import Lock
 from ..serializers import AttendanceReportSerializer  
 from collections import defaultdict  
 from employee_tracking_system.services.working_hours_service import WorkingHoursService
-
+import logging
 
 logger = logging.getLogger(__name__)
 
@@ -36,7 +35,7 @@ class AttendanceReportService:
             return cached_report
 
         all_attendances = self.repository.get_all_attendances_between_dates(start_date, end_date)
-        employees = self.employee_service.get_all_employees()  # Tüm çalışanları al
+        employees = self.employee_service.get_all_employees()  
         weekly_report = []
 
         for employee in employees:
@@ -95,7 +94,6 @@ class AttendanceReportService:
         now = timezone.localtime(timezone.now())
         now_date = now.date()
 
-        # Gelecek aylara rapor hazırlamayı engelle
         if (year, month) > (now.year, now.month):
             working_days = []
         else:
@@ -107,7 +105,6 @@ class AttendanceReportService:
             logger.info(f"Fetching monthly report from cache {cache_key}")
             return cached_report
 
-        # Bugün çalışma günü ise end_date'i şimdi olarak, değilse son çalışma günü olarak ayarla
         if working_days:
             if now_date in working_days:
                 end_date = now_date
@@ -134,20 +131,16 @@ class AttendanceReportService:
 
                 for attendance_date, attendances in attendances_by_date.items():
                     if attendance_date < employee.registration_date:
-                        continue  # Kayıt tarihinden önceki günler atlanır
+                        continue 
 
-                    # Günün sonunu mesai bitimine veya şimdiye göre ayarlayın
                     working_hours = WorkingHoursService.get_working_hours()
                     if attendance_date == now_date:
-                        # Bugünkü gün için 'now' kullan
                         current_now = now
                     else:
-                        # Geçmiş günler için 'end_time' kullan
                         current_now = timezone.localtime(
                             timezone.make_aware(datetime.combine(attendance_date, working_hours['end_time']))
                         )
 
-                    # Lateness ve work duration hesapla
                     daily_lateness = self.attendance_calculator.calculate_lateness(
                         attendances=attendances,
                         now=current_now,
@@ -164,16 +157,12 @@ class AttendanceReportService:
                     if daily_lateness > timedelta():
                         days_late.add(attendance_date)
 
-                # 1.) not_checked_in durumunu ele alma
                 for wd in working_days:
                     if wd not in days_worked and wd >= employee.registration_date:
-                        # Bu gün hiç check-in/check-out yapılmamış, lateness ekle
                         working_hours = WorkingHoursService.get_working_hours()
                         if wd == now_date:
-                            # Bugünkü gün için 'now' kullan
                             current_now = now
                         else:
-                            # Geçmiş günler için 'end_time' kullan
                             current_now = timezone.localtime(
                                 timezone.make_aware(datetime.combine(wd, working_hours['end_time']))
                             )
