@@ -9,11 +9,13 @@ import logging
 logger = logging.getLogger(__name__)
 
 class AttendanceCalculator:
+
     @staticmethod
     def calculate_lateness(
         attendances: List['Attendance'],
         now: Optional[datetime] = None,
-        include_no_check_in: bool = False
+        include_no_check_in: bool = False,
+        registration_dt: Optional[datetime] = None 
     ) -> timedelta:
         working_hours = WorkingHoursService.get_working_hours()
 
@@ -21,33 +23,56 @@ class AttendanceCalculator:
             now = timezone.localtime(timezone.now())
         today = now.date()
 
-        start_of_work = timezone.localtime(timezone.make_aware(datetime.combine(today, working_hours['start_time'])))
-        end_of_work = timezone.localtime(timezone.make_aware(datetime.combine(today, working_hours['end_time'])))
+
+        start_of_work = timezone.localtime(timezone.make_aware(
+            datetime.combine(today, working_hours['start_time'])
+        ))
+        end_of_work = timezone.localtime(timezone.make_aware(
+            datetime.combine(today, working_hours['end_time'])
+        ))
 
         if now > end_of_work:
             scheduled_end = end_of_work
         else:
             scheduled_end = now
 
+
+        if registration_dt and registration_dt.date() == today:
+
+            if registration_dt > end_of_work:
+                return timedelta(0)
+
+            if registration_dt > start_of_work:
+                start_of_work = registration_dt
+
+
         scheduled_work_duration = scheduled_end - start_of_work
+        if scheduled_work_duration < timedelta(0):
+
+            return timedelta(0)
 
         lateness = timedelta()
+
 
         if any(att.status == 'on_leave' for att in attendances):
             return lateness
 
+
         if not attendances:
             if include_no_check_in and TimeCalculator.is_working_day(today):
                 if now > start_of_work:
-                    lateness += scheduled_end - start_of_work
+                    lateness += (scheduled_end - start_of_work)
             return lateness
 
-        total_presence = AttendanceCalculator.get_total_presence_time(attendances, start_of_work, scheduled_end)
+        total_presence = AttendanceCalculator.get_total_presence_time(
+            attendances,
+            start_of_work,
+            scheduled_end
+        )
 
         lateness = scheduled_work_duration - total_presence
-
-        if lateness < timedelta():
-            lateness = timedelta()
+        if lateness < timedelta(0):
+            lateness = timedelta(0)
 
         return lateness
 

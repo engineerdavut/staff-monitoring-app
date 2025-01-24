@@ -101,22 +101,19 @@ class CheckInOutService:
         return self.get_attendance_status(employee)
     
     def get_attendance_status(self, employee: Employee, include_no_check_in: bool = True) -> dict:
-        """Sadece bugünkü attendances'ı kullanarak anlık statüyü döndürür."""
-        now_utc = timezone.now()
-        local_timezone = timezone.get_default_timezone()
-        now_local = timezone.localtime(now_utc, local_timezone)
+        now_local = timezone.localtime(timezone.now())
         today = now_local.date()
-    
 
-        cache_key = f"attendance:{employee.id}:{today}"
-        cache_data = cache.get(cache_key)
-    
         attendances_today = self.repository.get_employee_attendances(employee.id, today)
-    
+
+
+        reg_dt = getattr(employee, 'registration_datetime', None)  
+
         daily_lateness = self.attendance_calculator.calculate_lateness(
             attendances=attendances_today,
             now=now_local,
-            include_no_check_in=include_no_check_in
+            include_no_check_in=include_no_check_in,
+            registration_dt=reg_dt 
         )
         daily_work = self.attendance_calculator.calculate_work_duration(
             attendances=attendances_today,

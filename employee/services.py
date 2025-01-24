@@ -213,13 +213,16 @@ class EmployeeService:
             attendances = self.attendance_repository.get_employee_attendances(employee.id, target_date)
             logger.debug(f"Attendances fetched: {attendances.count()} records")
 
+            reg_dt = getattr(employee, 'registration_datetime', None)
+
             status = Attendance.objects.determine_attendance_status(attendances, now, target_date)
             logger.debug(f"Determined status: {status}")
 
             daily_lateness = self.attendance_calculator.calculate_lateness(
                 attendances=attendances,
                 now=now,
-                include_no_check_in=True
+                include_no_check_in=True,
+                registration_dt=reg_dt  # <-- YENİ
             )
             logger.debug(f"Calculated daily lateness: {daily_lateness}")
 

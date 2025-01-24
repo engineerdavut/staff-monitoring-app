@@ -10,7 +10,7 @@ class Employee(models.Model):
     remaining_leave = models.DurationField(default=timedelta(days=15))  
     total_lateness = models.DurationField(default=timedelta)
     total_work_duration = models.DurationField(default=timedelta)
-    registration_date = models.DateField(auto_now_add=True) 
+    registration_datetime = models.DateTimeField(auto_now_add=True) 
 
     objects = EmployeeManager() 
 

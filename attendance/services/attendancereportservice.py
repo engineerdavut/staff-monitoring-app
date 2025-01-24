@@ -91,10 +91,10 @@ class AttendanceReportService:
 
     def get_monthly_report(self, year: int, month: int) -> List[Dict[str, Any]]:
         start_date = date(year, month, 1)
-        now = timezone.localtime(timezone.now())
-        now_date = now.date()
+        now_local = timezone.localtime(timezone.now())
+        today = now_local.date()
 
-        if (year, month) > (now.year, now.month):
+        if (year, month) > (today.year, today.month):
             working_days = []
         else:
             working_days = TimeCalculator.get_working_days_in_month(year, month)
@@ -106,12 +106,12 @@ class AttendanceReportService:
             return cached_report
 
         if working_days:
-            if now_date in working_days:
-                end_date = now_date
+            if today in working_days:
+                end_date = today
             else:
                 end_date = working_days[-1]
         else:
-            end_date = start_date
+            end_date = start_date  
 
         all_attendances = self.repository.get_all_attendances_between_dates(start_date, end_date)
         employees = self.employee_service.get_all_employees()
@@ -119,65 +119,86 @@ class AttendanceReportService:
 
         for employee in employees:
             try:
-                employee_attendances = [a for a in all_attendances if a.employee == employee]
+
+                reg_dt = getattr(employee, 'registration_datetime', None)
+                employee_attendances = [
+                    att for att in all_attendances if att.employee_id == employee.id
+                ]
                 attendances_by_date = defaultdict(list)
                 for attendance in employee_attendances:
                     attendances_by_date[attendance.date].append(attendance)
 
-                total_work_time = timedelta()
-                total_lateness = timedelta()
+                total_work_time = timedelta(0)
+                total_lateness = timedelta(0)
                 days_worked = set()
                 days_late = set()
 
-                for attendance_date, attendances in attendances_by_date.items():
-                    if attendance_date < employee.registration_date:
-                        continue 
+                for attendance_date, attendances_list in attendances_by_date.items():
+
+                    if reg_dt and attendance_date < reg_dt.date():
+                        continue
+                    if attendance_date > today:
+                        continue
 
                     working_hours = WorkingHoursService.get_working_hours()
-                    if attendance_date == now_date:
-                        current_now = now
+                    if attendance_date == today:
+                        current_now = now_local
                     else:
                         current_now = timezone.localtime(
-                            timezone.make_aware(datetime.combine(attendance_date, working_hours['end_time']))
+                            timezone.make_aware(datetime.combine(
+                                attendance_date, working_hours['end_time']
+                            ))
                         )
 
                     daily_lateness = self.attendance_calculator.calculate_lateness(
-                        attendances=attendances,
+                        attendances=attendances_list,
                         now=current_now,
-                        include_no_check_in=True
+                        include_no_check_in=True,
+                        registration_dt=reg_dt  
                     )
                     daily_work_time = self.attendance_calculator.calculate_work_duration(
-                        attendances=attendances,
+                        attendances=attendances_list,
                         now=current_now
                     )
 
                     total_lateness += daily_lateness
                     total_work_time += daily_work_time
                     days_worked.add(attendance_date)
-                    if daily_lateness > timedelta():
+
+                    if daily_lateness > timedelta(0):
                         days_late.add(attendance_date)
 
                 for wd in working_days:
-                    if wd not in days_worked and wd >= employee.registration_date:
-                        working_hours = WorkingHoursService.get_working_hours()
-                        if wd == now_date:
-                            current_now = now
-                        else:
-                            current_now = timezone.localtime(
-                                timezone.make_aware(datetime.combine(wd, working_hours['end_time']))
-                            )
-                        lateness = self.attendance_calculator.calculate_lateness(
-                            attendances=[],
-                            now=current_now,
-                            include_no_check_in=True
+                    if reg_dt and wd < reg_dt.date():
+                        continue
+                    if wd > today:
+                        continue
+                    if wd in days_worked:
+                        continue
+
+                    working_hours = WorkingHoursService.get_working_hours()
+                    if wd == today:
+                        current_now = now_local
+                    else:
+                        current_now = timezone.localtime(
+                            timezone.make_aware(datetime.combine(wd, working_hours['end_time']))
                         )
-                        total_lateness += lateness
-                        if lateness > timedelta():
-                            days_late.add(wd)
+                    lateness = self.attendance_calculator.calculate_lateness(
+                        attendances=[],
+                        now=current_now,
+                        include_no_check_in=True,
+                        registration_dt=reg_dt 
+                    )
+                    total_lateness += lateness
+                    if lateness > timedelta(0):
+                        days_late.add(wd)
 
                 days_worked_count = len(days_worked)
                 days_late_count = len(days_late)
-                avg_daily_hours = total_work_time / days_worked_count if days_worked_count > 0 else timedelta()
+                if days_worked_count > 0:
+                    avg_daily_hours = total_work_time / days_worked_count
+                else:
+                    avg_daily_hours = timedelta(0)
 
                 monthly_report.append({
                     'employee': employee.user.username,
@@ -187,6 +208,7 @@ class AttendanceReportService:
                     'days_worked': days_worked_count,
                     'days_late': days_late_count,
                 })
+
             except Exception as e:
                 logger.error(f"Error processing monthly report for employee {employee.id}: {e}")
                 monthly_report.append({

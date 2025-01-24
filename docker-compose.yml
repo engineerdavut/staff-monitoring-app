@@ -28,7 +28,7 @@ services:
       - PYTHONPATH=/app
       - DJANGO_SETTINGS_MODULE=employee_tracking_system.settings
       - AUTHORIZED_KEY=${AUTHORIZED_KEY}
-      - DEBUG=${DEBUG}
+      - DJANGO_DEBUG=${DJANGO_DEBUG}
       - DJANGO_ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS}
     networks:
       - app_network
@@ -87,7 +87,7 @@ services:
       - PYTHONPATH=/app
       - DJANGO_SETTINGS_MODULE=employee_tracking_system.settings
       - AUTHORIZED_KEY=${AUTHORIZED_KEY}
-      - DEBUG=${DEBUG}
+      - DJANGO_DEBUG=${DJANGO_DEBUG}
       - DJANGO_ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS}
     networks:
       - app_network
@@ -112,7 +112,7 @@ services:
       - PYTHONPATH=/app
       - DJANGO_SETTINGS_MODULE=employee_tracking_system.settings
       - AUTHORIZED_KEY=${AUTHORIZED_KEY}
-      - DEBUG=${DEBUG}
+      - DJANGO_DEBUG=${DJANGO_DEBUG}
       - DJANGO_ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS}
     networks:
       - app_network
